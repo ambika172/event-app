@@ -1,0 +1,94 @@
+[
+  {
+    "id": "1",
+    "eventName": "Tech Summit 2025",
+    "category": "Technology",
+    "organizer": "TechWorld Inc.",
+    "date": "2025-08-15",
+    "time": "10:00 AM",
+    "location": "Mumbai Convention Centre",
+    "ticketPrice": 1500,
+    "rating": 4.8,
+    "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
+    "shortDescription": "Join the biggest tech summit of the year featuring top industry leaders and innovators.",
+    "fullDescription": "Tech Summit 2025 is a premier technology conference bringing together the brightest minds in the industry. Attendees will gain insights into the latest trends in AI, cloud computing, cybersecurity, and more. With over 50 speakers and 200+ sessions, this is the event you cannot miss.",
+    "venueDetails": "Mumbai Convention Centre, Hall A & B, Ground Floor, BKC, Mumbai - 400051. Ample parking available. Metro accessible via BKC station.",
+    "organizerInformation": "TechWorld Inc. has been organizing premier technology events since 2010. With over 100 successful events globally, they bring top-tier experiences to attendees worldwide.",
+    "availableSeats": 320,
+    "eventSchedule": [
+      {"time": "10:00 AM", "activity": "Registration & Welcome"},
+      {"time": "11:00 AM", "activity": "Keynote: Future of AI"},
+      {"time": "01:00 PM", "activity": "Lunch Break"},
+      {"time": "02:00 PM", "activity": "Panel: Cloud & Security"},
+      {"time": "04:00 PM", "activity": "Networking Session"},
+      {"time": "06:00 PM", "activity": "Closing Ceremony"}
+    ],
+    "photoGallery": [
+      "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400",
+      "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=400",
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400"
+    ],
+    "locationMap": "https://maps.google.com/?q=Mumbai+Convention+Centre"
+  },
+  {
+    "id": "2",
+    "eventName": "Cultural Fest 2025",
+    "category": "Culture",
+    "organizer": "Heritage Arts Foundation",
+    "date": "2025-09-05",
+    "time": "05:00 PM",
+    "location": "NCPA, Mumbai",
+    "ticketPrice": 800,
+    "rating": 4.6,
+    "image": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800",
+    "shortDescription": "Celebrate the rich cultural heritage of India through music, dance, and art.",
+    "fullDescription": "Cultural Fest 2025 is a grand celebration of India's diverse arts and traditions. Featuring classical dance performances, live music, art installations, and food stalls from across the country, this event promises an immersive cultural journey for the whole family.",
+    "venueDetails": "NCPA, Nariman Point, Mumbai - 400021. Easily accessible by taxi, auto, and public transport. Limited parking available on-site.",
+    "organizerInformation": "Heritage Arts Foundation is a non-profit dedicated to promoting and preserving Indian arts and culture. They have organized over 50 cultural events across India.",
+    "availableSeats": 500,
+    "eventSchedule": [
+      {"time": "05:00 PM", "activity": "Gates Open"},
+      {"time": "06:00 PM", "activity": "Classical Dance Performance"},
+      {"time": "07:30 PM", "activity": "Live Music Concert"},
+      {"time": "09:00 PM", "activity": "Art Exhibition Walk"},
+      {"time": "10:00 PM", "activity": "Grand Finale"}
+    ],
+    "photoGallery": [
+      "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400",
+      "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400"
+    ],
+    "locationMap": "https://maps.google.com/?q=NCPA+Mumbai"
+  },
+  {
+    "id": "3",
+    "eventName": "Startup Pitch Night",
+    "category": "Business",
+    "organizer": "InnoVentures Hub",
+    "date": "2025-08-28",
+    "time": "06:30 PM",
+    "location": "WeWork BKC, Mumbai",
+    "ticketPrice": 500,
+    "rating": 4.5,
+    "image": "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=800",
+    "shortDescription": "Watch the next generation of entrepreneurs pitch their ideas to top investors.",
+    "fullDescription": "Startup Pitch Night brings together 20 of the most promising startups to present their ideas before a panel of seasoned investors and industry experts. A fantastic evening of innovation, networking, and inspiration for entrepreneurs and professionals alike.",
+    "venueDetails": "WeWork BKC, Platina Building, G Block, BKC, Mumbai - 400051. Co-working space with modern facilities.",
+    "organizerInformation": "InnoVentures Hub is Mumbai's leading startup incubator, having supported over 200 startups raise funding since 2015.",
+    "availableSeats": 150,
+    "eventSchedule": [
+      {"time": "06:30 PM", "activity": "Networking & Registration"},
+      {"time": "07:00 PM", "activity": "Pitch Round 1 (10 Startups)"},
+      {"time": "08:00 PM", "activity": "Break & Networking"},
+      {"time": "08:30 PM", "activity": "Pitch Round 2 (10 Startups)"},
+      {"time": "09:30 PM", "activity": "Investor Q&A"},
+      {"time": "10:00 PM", "activity": "Winner Announcement"}
+    ],
+    "photoGallery": [
+      "https://images.unsplash.com/photo-1542744094-3a31f272c490?w=400",
+      "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400",
+      "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=400"
+    ],
+    "locationMap": "https://maps.google.com/?q=WeWork+BKC+Mumbai"
+  }
+]
