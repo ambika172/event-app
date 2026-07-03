@@ -3,10 +3,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../models/event.dart';
 import '../models/app_theme.dart';
+import '../services/local_storage_service.dart';
 import 'event_details_screen.dart';
 import 'event_listing_screen.dart';
 import 'login_screen.dart';
 import 'booking_management_screen.dart';
+import 'favorites_screen.dart';
+import 'reviews_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +22,19 @@ class _HomeScreenState extends State<HomeScreen> {
   int _carouselIndex = 0;
   final CarouselSliderController _carouselController = CarouselSliderController();
   String _selectedCategory = 'All';
+  int _favoriteCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteCount();
+  }
+
+  Future<void> _loadFavoriteCount() async {
+    final ids = await LocalStorageService.getFavoriteIds();
+    if (!mounted) return;
+    setState(() => _favoriteCount = ids.length);
+  }
 
   final List<String> _categories = [
     'All', 'Music', 'Sports', 'Technology',
@@ -139,6 +155,70 @@ class _HomeScreenState extends State<HomeScreen> {
                     const Icon(Icons.search_rounded, color: AppTheme.textLight, size: 20),
               ),
             ),
+            // Favorites Icon
+            IconButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const FavoritesScreen()),
+                );
+                _loadFavoriteCount();
+              },
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.darkCard,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    const Icon(Icons.favorite_rounded,
+                        color: AppTheme.textLight, size: 20),
+                    if (_favoriteCount > 0)
+                      Positioned(
+                        right: -4,
+                        top: -4,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: const BoxDecoration(
+                            color: AppTheme.secondary,
+                            shape: BoxShape.circle,
+                          ),
+                          constraints:
+                              const BoxConstraints(minWidth: 14, minHeight: 14),
+                          child: Text(
+                            '$_favoriteCount',
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            // Reviews Icon
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ReviewsScreen()),
+                );
+              },
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.darkCard,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.rate_review_rounded,
+                    color: AppTheme.textLight, size: 20),
+              ),
+            ),
             // My Bookings Icon
             IconButton(
               onPressed: () {
@@ -154,19 +234,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(Icons.event_seat_rounded,
-                    color: AppTheme.textLight, size: 20),
-              ),
-            ),
-            // Notification Icon
-            IconButton(
-              onPressed: () {},
-              icon: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppTheme.darkCard,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Icon(Icons.notifications_rounded,
                     color: AppTheme.textLight, size: 20),
               ),
             ),
@@ -527,9 +594,9 @@ class _HomeScreenState extends State<HomeScreen> {
             GridView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.72,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                mainAxisExtent: 215,
                 crossAxisSpacing: 14,
                 mainAxisSpacing: 14,
               ),

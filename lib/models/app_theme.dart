@@ -16,8 +16,11 @@ class AppTheme {
     scaffoldBackgroundColor: dark,
     colorScheme: const ColorScheme.dark(
       primary: primary,
+      onPrimary: Colors.white,
       secondary: secondary,
+      onSecondary: Colors.white,
       surface: darkCard,
+      onSurface: textLight,
     ),
     appBarTheme: const AppBarTheme(
       backgroundColor: dark,
@@ -29,6 +32,18 @@ class AppTheme {
         letterSpacing: 0.5,
       ),
       iconTheme: IconThemeData(color: textLight),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: primary,
+        foregroundColor: Colors.white,
+      ),
     ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(color: textLight, fontWeight: FontWeight.bold),

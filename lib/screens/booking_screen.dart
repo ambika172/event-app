@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import '../models/app_theme.dart';
 import '../models/booking.dart';
-import '../services/local_storage_service.dart';
+import 'payment_screen.dart';
 
 class BookingScreen extends StatefulWidget {
   final VoidCallback? onBookingConfirmed;
@@ -24,10 +25,6 @@ class _BookingScreenState extends State<BookingScreen> {
   final _emailController = TextEditingController();
   final _ticketsController = TextEditingController();
   DateTime? _bookingDate;
-  String? _paymentMethod;
-
-  static const double _serviceChargeRate = 0.05; // 5% service charge
-  static const _paymentMethods = ['Credit Card', 'Debit Card', 'UPI', 'Cash'];
 
   @override
   void initState() {
@@ -48,10 +45,6 @@ class _BookingScreenState extends State<BookingScreen> {
     if (_selectedEvent == null) return 0;
     return qty * _selectedEvent!.ticketPrice;
   }
-
-  double get _serviceCharge => _ticketCost * _serviceChargeRate;
-
-  double get _grandTotal => _ticketCost + _serviceCharge;
 
   @override
   void dispose() {
@@ -79,7 +72,7 @@ class _BookingScreenState extends State<BookingScreen> {
     return regex.hasMatch(value.trim());
   }
 
-  Future<void> _confirmBooking() async {
+  Future<void> _continueToPayment() async {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedEvent == null) {
@@ -90,43 +83,38 @@ class _BookingScreenState extends State<BookingScreen> {
       _showError('Please choose a booking date.');
       return;
     }
-    if (_paymentMethod == null) {
-      _showError('A payment method must be selected before booking confirmation.');
-      return;
+
+    final event = _selectedEvent!;
+    final bookingDateStr =
+        '${_bookingDate!.day}/${_bookingDate!.month}/${_bookingDate!.year}';
+
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PaymentScreen(
+          eventName: event.name,
+          userName: _userNameController.text.trim(),
+          email: _emailController.text.trim(),
+          numberOfTickets: int.parse(_ticketsController.text),
+          ticketAmount: event.ticketPrice,
+          bookingDate: bookingDateStr,
+          onBookingConfirmed: widget.onBookingConfirmed,
+        ),
+      ),
+    );
+
+    // Reset the form once the user makes their way back here (whether or
+    // not the booking completed), so the "New Booking" tab starts fresh.
+    if (mounted && result != false) {
+      _formKey.currentState?.reset();
+      setState(() {
+        _selectedEvent = null;
+        _bookingDate = null;
+        _userNameController.clear();
+        _emailController.clear();
+        _ticketsController.clear();
+      });
     }
-
-    final booking = Booking(
-      bookingId: 'BK${DateTime.now().millisecondsSinceEpoch}',
-      eventName: _selectedEvent!.name,
-      userName: _userNameController.text.trim(),
-      email: _emailController.text.trim(),
-      numberOfTickets: int.parse(_ticketsController.text),
-      bookingDate:
-          '${_bookingDate!.day}/${_bookingDate!.month}/${_bookingDate!.year}',
-      ticketCost: _ticketCost,
-      serviceCharge: _serviceCharge,
-      grandTotal: _grandTotal,
-      paymentMethod: _paymentMethod!,
-    );
-
-    await LocalStorageService.addBooking(booking);
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Booking confirmed successfully!')),
-    );
-
-    _formKey.currentState!.reset();
-    setState(() {
-      _selectedEvent = null;
-      _bookingDate = null;
-      _paymentMethod = null;
-      _userNameController.clear();
-      _emailController.clear();
-      _ticketsController.clear();
-    });
-
-    widget.onBookingConfirmed?.call();
   }
 
   void _showError(String message) {
@@ -146,16 +134,20 @@ class _BookingScreenState extends State<BookingScreen> {
           children: [
             const Text(
               'Event Booking',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                  color: AppTheme.textLight,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
 
             // Event Name
             DropdownButtonFormField<EventInfo>(
-              value: _selectedEvent,
+              initialValue: _selectedEvent,
+              dropdownColor: AppTheme.darkCard,
+              style: const TextStyle(color: AppTheme.textLight),
               decoration: const InputDecoration(
                 labelText: 'Event Name',
-                border: OutlineInputBorder(),
               ),
               items: availableEvents
                   .map((e) => DropdownMenuItem(
@@ -175,9 +167,9 @@ class _BookingScreenState extends State<BookingScreen> {
             // User Name
             TextFormField(
               controller: _userNameController,
+              style: const TextStyle(color: AppTheme.textLight),
               decoration: const InputDecoration(
                 labelText: 'User Name',
-                border: OutlineInputBorder(),
               ),
               validator: (v) =>
                   (v == null || v.trim().isEmpty) ? 'User name is required' : null,
@@ -187,9 +179,9 @@ class _BookingScreenState extends State<BookingScreen> {
             // Email Address
             TextFormField(
               controller: _emailController,
+              style: const TextStyle(color: AppTheme.textLight),
               decoration: const InputDecoration(
                 labelText: 'Email Address',
-                border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.emailAddress,
               validator: (v) {
@@ -207,9 +199,9 @@ class _BookingScreenState extends State<BookingScreen> {
             // Number of Tickets
             TextFormField(
               controller: _ticketsController,
+              style: const TextStyle(color: AppTheme.textLight),
               decoration: const InputDecoration(
                 labelText: 'Number of Tickets',
-                border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
               onChanged: (_) => setState(() {}),
@@ -235,47 +227,24 @@ class _BookingScreenState extends State<BookingScreen> {
               child: InputDecorator(
                 decoration: const InputDecoration(
                   labelText: 'Booking Date',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Icon(Icons.calendar_today),
+                  suffixIcon: Icon(Icons.calendar_today, color: AppTheme.textMuted),
                 ),
                 child: Text(
                   _bookingDate == null
                       ? 'Select a date'
                       : '${_bookingDate!.day}/${_bookingDate!.month}/${_bookingDate!.year}',
+                  style: const TextStyle(color: AppTheme.textLight),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-
-            // Payment Method
-            DropdownButtonFormField<String>(
-              value: _paymentMethod,
-              decoration: const InputDecoration(
-                labelText: 'Payment Method',
-                border: OutlineInputBorder(),
-              ),
-              items: _paymentMethods
-                  .map((m) => DropdownMenuItem(value: m, child: Text(m)))
-                  .toList(),
-              onChanged: (value) => setState(() => _paymentMethod = value),
-              validator: (value) =>
-                  value == null ? 'A payment method must be selected' : null,
             ),
             const SizedBox(height: 20),
 
-            // Price summary
+            // Price summary (final total, including service charge, is
+            // shown on the Payment screen)
             Card(
-              color: Colors.grey.shade100,
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _priceRow('Ticket Cost', _ticketCost),
-                    _priceRow('Service Charge (5%)', _serviceCharge),
-                    const Divider(),
-                    _priceRow('Grand Total', _grandTotal, bold: true),
-                  ],
-                ),
+                child: _priceRow('Ticket Cost', _ticketCost, bold: true),
               ),
             ),
             const SizedBox(height: 20),
@@ -283,9 +252,12 @@ class _BookingScreenState extends State<BookingScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _confirmBooking,
-                style: ElevatedButton.styleFrom(padding: const EdgeInsets.all(14)),
-                child: const Text('Confirm Booking'),
+                onPressed: _continueToPayment,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primary,
+                  padding: const EdgeInsets.all(14),
+                ),
+                child: const Text('Continue to Payment'),
               ),
             ),
           ],
@@ -296,18 +268,16 @@ class _BookingScreenState extends State<BookingScreen> {
 
   Widget _priceRow(String label, double value, {bool bold = false}) {
     final style = TextStyle(
+      color: AppTheme.textLight,
       fontSize: bold ? 16 : 14,
       fontWeight: bold ? FontWeight.bold : FontWeight.normal,
     );
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: style),
-          Text('₹${value.toStringAsFixed(2)}', style: style),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: style),
+        Text('₹${value.toStringAsFixed(2)}', style: style),
+      ],
     );
   }
 }

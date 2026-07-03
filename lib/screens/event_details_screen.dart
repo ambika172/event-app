@@ -1,12 +1,54 @@
 import 'package:flutter/material.dart';
 import '../models/event.dart';
 import '../models/app_theme.dart';
+import '../services/local_storage_service.dart';
 import 'booking_management_screen.dart';
+import 'reviews_screen.dart';
 
-class EventDetailsScreen extends StatelessWidget {
+class EventDetailsScreen extends StatefulWidget {
   final Event event;
 
   const EventDetailsScreen({super.key, required this.event});
+
+  @override
+  State<EventDetailsScreen> createState() => _EventDetailsScreenState();
+}
+
+class _EventDetailsScreenState extends State<EventDetailsScreen> {
+  Event get event => widget.event;
+  bool _isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteStatus();
+  }
+
+  Future<void> _loadFavoriteStatus() async {
+    final ids = await LocalStorageService.getFavoriteIds();
+    if (!mounted) return;
+    setState(() => _isFavorite = ids.contains(event.id));
+  }
+
+  Future<void> _toggleFavorite() async {
+    final updated = _isFavorite
+        ? await LocalStorageService.removeFavorite(event.id, event.name)
+        : await LocalStorageService.addFavorite(event.id, event.name);
+    if (!mounted) return;
+    setState(() => _isFavorite = updated.contains(event.id));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppTheme.darkCard,
+        duration: const Duration(seconds: 1),
+        content: Text(
+          _isFavorite
+              ? '${event.name} added to favorites'
+              : '${event.name} removed from favorites',
+          style: const TextStyle(color: AppTheme.textLight),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +61,23 @@ class EventDetailsScreen extends StatelessWidget {
             expandedHeight: 280,
             pinned: true,
             backgroundColor: AppTheme.dark,
+            actions: [
+              IconButton(
+                onPressed: _toggleFavorite,
+                icon: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.35),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                    color: _isFavorite ? AppTheme.secondary : Colors.white,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -271,6 +330,45 @@ class EventDetailsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                   ],
+
+                  // Reviews & Ratings
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _SectionTitle('Reviews & Ratings'),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ReviewFormScreen(initialEvent: event),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.rate_review_rounded,
+                            color: AppTheme.primary, size: 18),
+                        label: const Text('Write a review',
+                            style: TextStyle(color: AppTheme.primary)),
+                      ),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ReviewsScreen(initialEvent: event),
+                          ),
+                        );
+                      },
+                      style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                      child: const Text('See all reviews for this event →',
+                          style: TextStyle(color: AppTheme.textMuted, fontSize: 13)),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
                   // Location Map Placeholder
                   _SectionTitle('Location Map'),
